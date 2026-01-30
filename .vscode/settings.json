@@ -1,0 +1,31 @@
+{
+    "files.associations": {
+        "iostream": "cpp"
+    },
+    "black-formatter.path": ["black"],
+    "mypy-type-checker.path": ["mypy"],
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true,
+        "editor.suggestSelection": "first",
+        "editor.acceptSuggestionOnEnter": "on",
+        "editor.tabCompletion": "on",
+        "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports": "explicit"
+        }
+    },
+    "editor.inlayHints.enabled": "on",
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.analysis.diagnosticMode": "workspace", 
+    "ruff.lint.enable": true,
+    "[json]": {
+        "editor.defaultFormatter": null
+    },
+    "notebook.defaultFormatter": null,
+    "python.analysis.autoFormatStrings": true
+}
