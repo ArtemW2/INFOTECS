@@ -1,12 +1,12 @@
 from pydantic import BaseModel, ConfigDict
 
+
 class WeatherDataResponse(BaseModel):
     temperature: float
     wind_speed: float
     pressure_msl: float
 
     model_config = ConfigDict(from_attributes=True)
-
 
 
 class WeatherWithFiltersResponse(BaseModel):

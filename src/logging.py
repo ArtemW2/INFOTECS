@@ -8,5 +8,7 @@ logging.basicConfig(
     ],
 )
 
-logger: logging.Logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+def get_logger(name: str = __name__) -> logging.Logger:
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
+    return logger

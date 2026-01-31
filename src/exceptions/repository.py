@@ -1,5 +1,8 @@
 class RepositorySaveError(Exception):
-    """Ошибка возникает при попытке сохранения записи в БД"""
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
 
 class RepositoryError(Exception):
-    """Ошибка при попытке чтения записи из БД"""
+    def __init__(self, message: str) -> None:
+        super().__init__(message)

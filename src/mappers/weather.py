@@ -1,9 +1,12 @@
+from typing import Any
+
 from src.database.models.weather import WeatherDataModel
 from src.enums import WeatherFilters
 from src.schemas.responses.weather import (
     WeatherDataResponse,
     WeatherWithFiltersResponse,
 )
+
 
 class WeatherMapper:
     FILTERS_MAPPING: dict[WeatherFilters, str] = {
@@ -14,7 +17,9 @@ class WeatherMapper:
         WeatherFilters.PRECIPITATION: "precipitation",
     }
 
-    def to_response_model(self, data: dict, timestamp: int) -> WeatherDataResponse:
+    def to_response_model(
+        self, data: dict[str, Any], timestamp: int
+    ) -> WeatherDataResponse:
         return WeatherDataResponse(
             temperature=data["hourly"]["temperature_2m"][timestamp],
             wind_speed=data["hourly"]["wind_speed_10m"][timestamp],
@@ -22,7 +27,7 @@ class WeatherMapper:
         )
 
     def to_optional_response_model(
-        self, data: dict, timestamp: int, filters: list[WeatherFilters]
+        self, data: dict[str, Any], timestamp: int, filters: list[WeatherFilters]
     ) -> WeatherWithFiltersResponse:
         result = {}
 

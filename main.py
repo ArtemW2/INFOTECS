@@ -8,7 +8,12 @@ from src.api.city import city_router
 from src.api.weather import weather_router
 from src.dependencies import SessionLocal
 from src.background_tasks import WeatherCacheService
-
+from src.exceptions.city import CityNotFoundError
+from src.exceptions.weather import WeatherAPIConnectionError, WeatherAPIError, WeatherAPITimeoutError, WeatherServiceError
+from src.exceptions.handlers import (
+    weather_api_error_handler, weather_connection_error_handler,
+    weather_timeout_handler, weather_service_error_handler, city_not_found_handler
+)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -27,6 +32,11 @@ app = FastAPI(title="Open-Meteo API", lifespan=lifespan)
 app.include_router(city_router)
 app.include_router(weather_router)
 
+app.add_exception_handler(WeatherAPIError, weather_api_error_handler)
+app.add_exception_handler(WeatherAPIConnectionError, weather_connection_error_handler)
+app.add_exception_handler(WeatherAPITimeoutError, weather_timeout_handler)
+app.add_exception_handler(WeatherServiceError, weather_service_error_handler)
+app.add_exception_handler(CityNotFoundError, city_not_found_handler)
 
 async def main() -> None:
     pass
