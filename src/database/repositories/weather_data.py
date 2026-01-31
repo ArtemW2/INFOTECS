@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import Any
+from logging import Logger
+from typing import Any, Tuple
 
-from sqlalchemy import select
+from sqlalchemy import Result, select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models.weather import WeatherDataModel
 from src.exceptions.repository import RepositoryError, RepositorySaveError
@@ -11,17 +12,17 @@ from src.exceptions.weather import WeatherNotFoundError
 from src.mappers.weather import WeatherMapper
 
 from src.logging import get_logger
-logger = get_logger(__name__)
+logger: Logger = get_logger(__name__)
 
 class WeatherRepository:
-    def __init__(self, session: Session, mapper: WeatherMapper) -> None:
-        self.session: Session = session
+    def __init__(self, session: AsyncSession, mapper: WeatherMapper) -> None:
+        self.session: AsyncSession = session
         self.mapper: WeatherMapper = mapper
 
     async def get(self, city_id: int) -> dict[str, Any]:
         try:
             logger.info(f"Поиск данных о погоде для города с ID={city_id} в собственной БД")
-            data = await self.session.execute(
+            data: Result[Tuple[WeatherDataModel]] = await self.session.execute(
                 select(WeatherDataModel).where(WeatherDataModel.city_id == city_id)
             )
             data = data.scalar_one_or_none()
@@ -59,7 +60,7 @@ class WeatherRepository:
             raise RepositorySaveError(f"Ошибка сохранения: {e}") from e
 
     async def update(self, city_id: int, data: dict) -> None:
-        weather_record = await self.session.execute(
+        weather_record: Result[Tuple[WeatherDataModel]] = await self.session.execute(
             select(WeatherDataModel).where(WeatherDataModel.city_id == city_id)
         )
         weather_record = weather_record.scalar_one_or_none()

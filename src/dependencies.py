@@ -4,7 +4,6 @@ import aiohttp
 from fastapi import Depends
 from sqlalchemy import Engine
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session
 
 from src.database.repositories.cities import CityRepository
 from src.database.repositories.weather_data import WeatherRepository
@@ -13,7 +12,7 @@ from src.mappers.city import CityMapper
 from src.mappers.weather import WeatherMapper
 
 engine: Engine = create_db_engine()
-SessionLocal: Session = get_session_factory(engine)
+SessionLocal: AsyncSession = get_session_factory(engine)
 
 
 async def get_db_session() -> AsyncGenerator[AsyncSession, Any]:
@@ -40,12 +39,12 @@ def get_city_mapper() -> CityMapper:
 
 
 def get_city_repo(
-    session: Session = Depends(get_db_session), mapper=Depends(get_city_mapper)
+    session: AsyncSession = Depends(get_db_session), mapper=Depends(get_city_mapper)
 ) -> CityRepository:
     return CityRepository(session, mapper)
 
 
 def get_weather_repo(
-    session: Session = Depends(get_db_session), mapper=Depends(get_weather_mapper)
+    session: AsyncSession = Depends(get_db_session), mapper=Depends(get_weather_mapper)
 ) -> WeatherRepository:
     return WeatherRepository(session, mapper)

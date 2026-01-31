@@ -18,7 +18,7 @@ from src.exceptions.weather import (
     WeatherServiceError,
 )
 from src.logging import get_logger
-logger = get_logger(__name__)
+logger: logging.Logger = get_logger(__name__)
 
 
 class FetchWeatherData:
@@ -46,7 +46,7 @@ class FetchWeatherData:
 
     async def __call__(
         self, latitude: float, longitude: float, session: aiohttp.ClientSession
-    ):
+    ) -> dict[str, Any]:
         params: dict[str, Any] = {
             "latitude": latitude,
             "longitude": longitude,

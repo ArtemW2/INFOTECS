@@ -1,14 +1,13 @@
 import asyncio
-
-import aiohttp
 import logging
 
+import aiohttp
 from tenacity import (
+    before_sleep_log,
     retry,
     retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
-    before_sleep_log
 )
 
 from src.exceptions.weather import (
@@ -18,7 +17,8 @@ from src.exceptions.weather import (
     WeatherServiceError,
 )
 from src.logging import get_logger
-logger = get_logger(__name__)
+
+logger: logging.Logger = get_logger(__name__)
 
 
 class FetchCityCoordinates:

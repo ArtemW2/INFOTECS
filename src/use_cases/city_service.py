@@ -1,3 +1,4 @@
+from logging import Logger
 from typing import Any
 
 import aiohttp
@@ -10,7 +11,7 @@ from src.use_cases.fetch_coordinates import FetchCityCoordinates
 from src.use_cases.fetch_weather_data import FetchWeatherData
 
 from src.logging import get_logger
-logger = get_logger(__name__)
+logger: Logger = get_logger(__name__)
 
 class CityService:
     def __init__(

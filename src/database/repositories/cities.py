@@ -1,8 +1,10 @@
-from typing import Any
+from logging import Logger
+from typing import Any, Tuple
 
+from sqlalchemy import Result
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.future import select
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models.cities import CityModel
 from src.exceptions.city import CityNotFoundError
@@ -10,17 +12,17 @@ from src.exceptions.repository import RepositoryError, RepositorySaveError
 from src.logging import get_logger
 from src.mappers.city import CityMapper
 
-logger = get_logger(__name__)
+logger: Logger = get_logger(__name__)
 
 
 class CityRepository:
-    def __init__(self, session: Session, mapper: CityMapper) -> None:
-        self.session: Session = session
+    def __init__(self, session: AsyncSession, mapper: CityMapper) -> None:
+        self.session: AsyncSession = session
         self.mapper: CityMapper = mapper
 
     async def all(self) -> list[dict[str, Any]]:
         logger.info("Обращение к БД для получения полного списка доступных городов")
-        cities = await self.session.execute(select(CityModel))
+        cities: Result[Tuple[CityModel]] = await self.session.execute(select(CityModel))
         cities = cities.scalars().all()
         logger.info(f"Успешно извлечены данные о {len(cities)} городах")
 
@@ -30,11 +32,11 @@ class CityRepository:
         try:
             name = name.strip().title()
             logger.info(f"Поиск города {name} в собственной БД")
-            result = await self.session.execute(
+            result: Result[Tuple[CityModel]] = await self.session.execute(
                 select(CityModel).where(CityModel.name == name)
             )
 
-            city = result.scalar_one_or_none()
+            city: CityModel | None = result.scalar_one_or_none()
 
             if not city:
                 raise CityNotFoundError(name)
@@ -50,9 +52,9 @@ class CityRepository:
     async def save(self, data: dict) -> dict[str, Any]:
         data["name"] = data["name"].strip().title()
 
-        name = data["name"]
-        latitude = data["latitude"]
-        longitude = data["longitude"]
+        name: str = data["name"]
+        latitude: float = data["latitude"]
+        longitude: float = data["longitude"]
         try:
             logger.info(
                 f"Сохранение данных о городе {name} с координатам latitude={latitude}, longitude={longitude} в собственной БД"
@@ -78,11 +80,11 @@ class CityRepository:
             name = name.strip().title()
             logger.info(f"Поиск города {name} для удаления в БД")
 
-            result = await self.session.execute(
+            result: Result[Tuple[CityModel]] = await self.session.execute(
                 select(CityModel).where(CityModel.name == name)
             )
 
-            city = result.scalar_one_or_none()
+            city: CityModel | None = result.scalar_one_or_none()
 
             if not city:
                 raise CityNotFoundError(name)

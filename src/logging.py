@@ -9,6 +9,6 @@ logging.basicConfig(
 )
 
 def get_logger(name: str = __name__) -> logging.Logger:
-    logger = logging.getLogger(name)
+    logger: logging.Logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
     return logger

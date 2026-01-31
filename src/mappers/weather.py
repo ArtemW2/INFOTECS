@@ -37,7 +37,7 @@ class WeatherMapper:
 
         return WeatherWithFiltersResponse(**result)
 
-    def to_dto(self, model: WeatherDataModel):
+    def to_dto(self, model: WeatherDataModel) -> dict[str, Any]:
         return {
             "city_id": model.city_id,
             "data": model.data,

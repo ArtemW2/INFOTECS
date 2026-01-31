@@ -1,4 +1,5 @@
 import asyncio
+from logging import Logger
 from typing import Any, NoReturn
 
 import aiohttp
@@ -11,21 +12,21 @@ from src.mappers.weather import WeatherMapper
 from src.use_cases.fetch_weather_data import FetchWeatherData
 
 from src.logging import get_logger
-logger = get_logger(__name__)
+logger: Logger = get_logger(__name__)
 
 class WeatherCacheService:
-    def __init__(self, http_session: aiohttp.ClientSession, db_session_factory):
+    def __init__(self, http_session: aiohttp.ClientSession, db_session_factory) -> None:
         self.http_session: aiohttp.ClientSession = http_session
         self.SessionLocal = db_session_factory
         self.city_mapper = CityMapper()
         self.weather_mapper = WeatherMapper()
         self.city_weather = FetchWeatherData()
 
-    async def start(self):
+    async def start(self) -> None:
         self.task: asyncio.Task[NoReturn] = asyncio.create_task(self._update_loop())
         logger.info("WeatherCacheService запущен")
 
-    async def stop(self):
+    async def stop(self) -> None:
         if hasattr(self, "task"):
             self.task.cancel()
             try:
@@ -34,7 +35,7 @@ class WeatherCacheService:
                 pass
             logger.info("WeatherCacheService остановлен")
 
-    async def _update_loop(self):
+    async def _update_loop(self) -> NoReturn:
         while True:
             try:
                 await self._update_all_cities() 
@@ -43,7 +44,7 @@ class WeatherCacheService:
 
             await asyncio.sleep(900)
 
-    async def _update_all_cities(self):
+    async def _update_all_cities(self) -> None:
         async with self.SessionLocal() as db_session:
             city_repo = CityRepository(db_session, self.city_mapper)
             weather_repo = WeatherRepository(db_session, self.weather_mapper)
